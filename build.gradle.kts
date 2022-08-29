@@ -13,6 +13,8 @@ repositories {
 }
 
 dependencies {
+    implementation("org.projectlombok:lombok:1.18.24")
+    annotationProcessor("org.projectlombok:lombok:1.18.24")
 }
 
 tasks.getByName<Test>("test") {
