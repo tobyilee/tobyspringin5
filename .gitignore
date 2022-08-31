@@ -37,3 +37,8 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+/docker/db/mysql/config/**
+/docker/db/mysql/data/**
+/docker/db/mysql/init/**
+
