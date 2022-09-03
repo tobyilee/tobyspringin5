@@ -15,6 +15,7 @@ repositories {
 dependencies {
     implementation("org.projectlombok:lombok:1.18.24")
     implementation("mysql:mysql-connector-java:8.0.30")
+    implementation("org.springframework:spring-context:5.3.22")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
 }
 
