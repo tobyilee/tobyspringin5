@@ -2,7 +2,6 @@ package springbook.user.sandbox;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
 import springbook.user.dao.DaoFactory;
 import springbook.user.dao.UserDao;
 
