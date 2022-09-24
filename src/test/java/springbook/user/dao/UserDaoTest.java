@@ -15,6 +15,9 @@ public class UserDaoTest {
 		ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
 		UserDao dao = context.getBean("userDao", UserDao.class);
 
+		dao.deleteAll();
+		assertThat(dao.getCount()).isEqualTo(0);
+
 		User user = new User();
 		user.setId("gyumee");
 		user.setName("박성철");
