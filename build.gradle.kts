@@ -20,6 +20,7 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testImplementation("org.assertj:assertj-core:3.23.1")
+    testImplementation("org.springframework:spring-test:5.3.22")
 
     annotationProcessor("org.projectlombok:lombok:1.18.24")
 }

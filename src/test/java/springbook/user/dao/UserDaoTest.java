@@ -3,9 +3,13 @@ package springbook.user.dao;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import springbook.user.domain.User;
 
 import java.sql.SQLException;
@@ -13,7 +17,12 @@ import java.sql.SQLException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration("classpath:applicationContext.xml")
 public class UserDaoTest {
+    @Autowired
+    ApplicationContext context;
+
     private UserDao dao;
 
     private User user1;
@@ -22,8 +31,7 @@ public class UserDaoTest {
 
     @BeforeEach
     public void setUp() {
-        ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
-        this.dao = context.getBean("userDao", UserDao.class);
+        this.dao = this.context.getBean("userDao", UserDao.class);
 
         this.user1 = new User("gyumee", "박성철", "springno1");
         this.user2 = new User("leegw700", "이길원", "springno2");
@@ -33,23 +41,20 @@ public class UserDaoTest {
 
     @Test
     public void andAndGet() throws SQLException {
-        ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
-        UserDao dao = context.getBean("userDao", UserDao.class);
-
         dao.deleteAll();
         assertThat(dao.getCount()).isEqualTo(0);
 
-        User user = new User();
-        user.setId("gyumee");
-        user.setName("박성철");
-        user.setPassword("springno1");
+        dao.add(user1);
+        dao.add(user2);
+        assertThat(dao.getCount()).isEqualTo(2);
 
-        dao.add(user);
+        User userget1 = dao.get(user1.getId());
+        assertThat(userget1.getName()).isEqualTo(user1.getName());
+        assertThat(userget1.getPassword()).isEqualTo(user1.getPassword());
 
-        User user2 = dao.get(user.getId());
-
-        assertThat(user2.getName()).isEqualTo(user.getName());
-        assertThat(user2.getPassword()).isEqualTo(user.getPassword());
+        User userget2 = dao.get(user2.getId());
+        assertThat(userget2.getName()).isEqualTo(user2.getName());
+        assertThat(userget2.getPassword()).isEqualTo(user2.getPassword());
     }
 
     @Test
