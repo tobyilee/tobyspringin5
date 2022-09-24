@@ -17,6 +17,10 @@ dependencies {
     implementation("mysql:mysql-connector-java:8.0.30")
     implementation("org.springframework:spring-context:5.3.22")
     implementation("org.springframework:spring-jdbc:5.3.22")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.assertj:assertj-core:3.23.1")
+
     annotationProcessor("org.projectlombok:lombok:1.18.24")
 }
 
