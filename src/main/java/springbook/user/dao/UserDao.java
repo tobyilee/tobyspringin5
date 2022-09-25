@@ -7,6 +7,7 @@ import springbook.user.domain.User;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserDao {
     private JdbcTemplate jdbcTemplate;
@@ -41,5 +42,9 @@ public class UserDao {
 
     public int getCount()  {
         return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
+    }
+
+    public List<User> getAll() {
+        return this.jdbcTemplate.query("select * from users order by id",this.userMapper);
     }
 }
