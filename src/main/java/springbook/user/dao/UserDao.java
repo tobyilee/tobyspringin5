@@ -11,76 +11,82 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import springbook.user.domain.User;
 
 public class UserDao {
-	private DataSource dataSource;
+    private DataSource dataSource;
 
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
-	public void add(User user) throws SQLException {
-		Connection c = this.dataSource.getConnection();
+    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
+        try (Connection c = dataSource.getConnection();
+             PreparedStatement ps = stmt.makePreparedStatement(c)
+        ) {
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
 
-		PreparedStatement ps = c.prepareStatement(
-			"insert into users(id, name, password) values(?,?,?)");
-		ps.setString(1, user.getId());
-		ps.setString(2, user.getName());
-		ps.setString(3, user.getPassword());
 
-		ps.executeUpdate();
+    public void add(final User user) throws SQLException {
+        jdbcContextWithStatementStrategy(
+                c -> {
+                    PreparedStatement ps =
+                            c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
+                    ps.setString(1, user.getId());
+                    ps.setString(2, user.getName());
+                    ps.setString(3, user.getPassword());
 
-		ps.close();
-		c.close();
-	}
+                    return ps;
+                }
+        );
+    }
 
-	public User get(String id) throws SQLException {
-		Connection c = this.dataSource.getConnection();
-		PreparedStatement ps = c
-				.prepareStatement("select * from users where id = ?");
-		ps.setString(1, id);
 
-		ResultSet rs = ps.executeQuery();
+    public User get(String id) throws SQLException {
+        Connection c = this.dataSource.getConnection();
+        PreparedStatement ps = c
+                .prepareStatement("select * from users where id = ?");
+        ps.setString(1, id);
 
-		User user = null;
-		if (rs.next()) {
-			user = new User();
-			user.setId(rs.getString("id"));
-			user.setName(rs.getString("name"));
-			user.setPassword(rs.getString("password"));
-		}
+        ResultSet rs = ps.executeQuery();
 
-		rs.close();
-		ps.close();
-		c.close();
+        User user = null;
+        if (rs.next()) {
+            user = new User();
+            user.setId(rs.getString("id"));
+            user.setName(rs.getString("name"));
+            user.setPassword(rs.getString("password"));
+        }
 
-		if (user == null) throw new EmptyResultDataAccessException(1);
+        rs.close();
+        ps.close();
+        c.close();
 
-		return user;
-	}
+        if (user == null) throw new EmptyResultDataAccessException(1);
 
-	public void deleteAll() throws SQLException {
-		Connection c = dataSource.getConnection();
+        return user;
+    }
 
-		PreparedStatement ps = c.prepareStatement("delete from users");
-		ps.executeUpdate();
+    public void deleteAll() throws SQLException {
+        jdbcContextWithStatementStrategy(
+                c -> c.prepareStatement("delete from users")
+        );
+    }
 
-		ps.close();
-		c.close();
-	}
+    public int getCount() throws SQLException {
+        Connection c = dataSource.getConnection();
 
-	public int getCount() throws SQLException  {
-		Connection c = dataSource.getConnection();
+        PreparedStatement ps = c.prepareStatement("select count(*) from users");
 
-		PreparedStatement ps = c.prepareStatement("select count(*) from users");
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        int count = rs.getInt(1);
 
-		ResultSet rs = ps.executeQuery();
-		rs.next();
-		int count = rs.getInt(1);
+        rs.close();
+        ps.close();
+        c.close();
 
-		rs.close();
-		ps.close();
-		c.close();
-
-		return count;
-	}
-
+        return count;
+    }
 }
