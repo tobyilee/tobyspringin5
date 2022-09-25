@@ -9,15 +9,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDao {
-    private DataSource dataSource;
+    private JdbcTemplate jdbcTemplate;
 
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-
-        this.dataSource = dataSource;
     }
 
-    private JdbcTemplate jdbcTemplate;
+    private RowMapper<User> userMapper =
+            (rs, rowNum) -> {
+                User user = new User();
+                user.setId(rs.getString("id"));
+                user.setName(rs.getString("name"));
+                user.setPassword(rs.getString("password"));
+                return user;
+            };
+
 
     public void add(final User user) {
         this.jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)",
@@ -26,13 +32,7 @@ public class UserDao {
 
     public User get(String id) {
         return this.jdbcTemplate.queryForObject("select * from users where id = ?",
-                (rs, rowNum) -> {
-                    User user = new User();
-                    user.setId(rs.getString("id"));
-                    user.setName(rs.getString("name"));
-                    user.setPassword(rs.getString("password"));
-                    return user;
-                }, id);
+                userMapper, id);
     }
 
     public void deleteAll() {
