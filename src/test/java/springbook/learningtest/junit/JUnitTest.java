@@ -1,4 +1,4 @@
-package springbook.learningtest;
+package springbook.learningtest.junit;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
