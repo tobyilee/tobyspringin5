@@ -1,35 +1,30 @@
 package springbook.user.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import springbook.user.domain.User;
+
+import javax.sql.DataSource;
+import java.io.Closeable;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
-import org.springframework.dao.EmptyResultDataAccessException;
-import springbook.user.domain.User;
-
 public class UserDao {
     private DataSource dataSource;
 
     public void setDataSource(DataSource dataSource) {
+        this.jdbcContext = new JdbcContext();
+        this.jdbcContext.setDataSource(dataSource);
+
         this.dataSource = dataSource;
     }
 
-    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
-        try (Connection c = dataSource.getConnection();
-             PreparedStatement ps = stmt.makePreparedStatement(c)
-        ) {
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        }
-    }
-
+    private JdbcContext jdbcContext;
 
     public void add(final User user) throws SQLException {
-        jdbcContextWithStatementStrategy(
+        this.jdbcContext.workWithStatementStrategy(
                 c -> {
                     PreparedStatement ps =
                             c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
@@ -69,7 +64,7 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
-        jdbcContextWithStatementStrategy(
+        this.jdbcContext.workWithStatementStrategy(
                 c -> c.prepareStatement("delete from users")
         );
     }
