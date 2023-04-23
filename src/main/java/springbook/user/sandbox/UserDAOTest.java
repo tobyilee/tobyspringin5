@@ -1,12 +1,13 @@
 package springbook.user.sandbox;
 
 import java.sql.SQLException;
+import springbook.user.dao.NUserDAO;
 import springbook.user.dao.UserDAO;
 import springbook.user.domain.User;
 
 public class UserDAOTest {
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
-		UserDAO dao = new UserDAO();
+		UserDAO dao = new NUserDAO();
 		User user = new User("lee", "bongho", "1234");
 		dao.add(user);
 

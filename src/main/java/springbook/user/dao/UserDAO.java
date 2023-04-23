@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import springbook.user.domain.User;
 
-public class UserDAO {
+public abstract class UserDAO {
 	public void add(User user) throws ClassNotFoundException, SQLException {
 		Connection connection = getConnection();
 		PreparedStatement ps = connection.prepareStatement("INSERT INTO USERS(id, name, password) VALUES(?, ?, ?)");
@@ -40,9 +40,5 @@ public class UserDAO {
 		return user;
 	}
 
-	private Connection getConnection() throws ClassNotFoundException, SQLException {
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/springbook", "spring", "book");
-		return connection;
-	}
+	protected abstract Connection getConnection();
 }
